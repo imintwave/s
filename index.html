@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UniversalRoblox Key</title>
+    <!-- Подключаем официальный скрипт Telegram WebApp -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
             margin: 0;
@@ -109,14 +111,6 @@
             animation: fadeIn 0.5s ease;
         }
 
-        .key-box .key-text.subscription-required {
-            color: #ffc107;
-            font-size: 16px;
-            letter-spacing: 1px;
-            font-family: -apple-system, 'Segoe UI', sans-serif;
-            font-weight: 400;
-        }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
@@ -201,169 +195,6 @@
             font-size: 12px;
         }
 
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal {
-            background: #141414;
-            border: 1px solid #1e1e1e;
-            border-radius: 20px;
-            padding: 40px 30px;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .modal .icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-        }
-
-        .modal h2 {
-            color: #fff;
-            font-size: 22px;
-            margin-bottom: 8px;
-        }
-
-        .modal p {
-            color: #888;
-            font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: 24px;
-        }
-
-        .modal .channel-name {
-            color: #da2f2f;
-            font-weight: 600;
-            font-size: 18px;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 14px;
-            background: #da2f2f;
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 10px;
-        }
-
-        .btn-primary:hover {
-            background: #c02828;
-            transform: scale(0.98);
-        }
-
-        .btn-check {
-            width: 100%;
-            padding: 14px;
-            background: transparent;
-            color: #666;
-            border: 1px solid #1e1e1e;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-check:hover {
-            background: #141414;
-            border-color: #333;
-            color: #aaa;
-        }
-
-        .btn-test {
-            width: 100%;
-            padding: 14px;
-            background: #4caf50;
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .btn-test:hover {
-            background: #45a049;
-            transform: scale(0.98);
-        }
-
-        .status-text {
-            margin-top: 16px;
-            padding: 8px;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .status-text.success {
-            color: #4caf50;
-        }
-
-        .status-text.error {
-            color: #f44336;
-        }
-
-        .status-text.info {
-            color: #42a5f5;
-        }
-
-        .debug-info {
-            margin-top: 20px;
-            padding: 15px;
-            background: #0a0a0a;
-            border: 1px solid #1e1e1e;
-            border-radius: 10px;
-            text-align: left;
-            font-size: 11px;
-            color: #666;
-            font-family: monospace;
-            max-height: 200px;
-            overflow-y: auto;
-            display: none;
-        }
-
-        .debug-info.show {
-            display: block;
-        }
-
-        .debug-toggle {
-            margin-top: 10px;
-            padding: 8px 16px;
-            background: transparent;
-            color: #333;
-            border: 1px solid #1e1e1e;
-            border-radius: 8px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .debug-toggle:hover {
-            background: #141414;
-            color: #666;
-        }
-
         @media (max-width: 420px) {
             .brand-name {
                 font-size: 22px;
@@ -376,44 +207,24 @@
     </style>
 </head>
 <body>
-    <!-- Modal -->
-    <div class="modal-overlay active" id="subscribeModal">
-        <div class="modal">
-            <div class="icon" id="modalIcon">🔒</div>
-            <h2>Требуется подписка</h2>
-            <p>Чтобы получить доступ к генератору ключей, подпишитесь на наш Telegram-канал:</p>
-            <p style="font-size: 20px; margin-bottom: 24px;">
-                <span class="channel-name">@UniversalRoblox</span>
-            </p>
-            <button class="btn-primary" id="subscribeBtn">📢 Подписаться</button>
-            <button class="btn-check" id="checkBtn">✅ Проверить подписку</button>
-            <button class="btn-test" id="testBtn">🔓 Тестовый режим</button>
-            <div id="modalStatus" class="status-text info" style="margin-top: 16px;">🔄 Проверка подписки...</div>
-        </div>
-    </div>
-
-    <!-- Main App -->
-    <div class="container" id="mainApp">
+    <div class="container">
         <div class="brand" id="brandLink">
             <div class="brand-name">Universal<span>Roblox</span></div>
-            <div class="brand-tagline">Генератор ключей</div>
+            <div class="brand-tagline">Key Generator</div>
         </div>
 
         <div class="key-box" id="keyBox">
-            <div class="key-label">Ваш ключ</div>
-            <div class="key-text subscription-required" id="keyText">🔒 Подпишитесь для доступа</div>
-            <div class="copy-hint">Нажмите, чтобы скопировать</div>
+            <div class="key-label">Your Key</div>
+            <div class="key-text placeholder" id="keyText">⏳ Loading...</div>
+            <div class="copy-hint">Click to copy</div>
         </div>
 
-        <button class="btn-secondary" id="copyBtn" disabled>📋 Скопировать ключ</button>
+        <button class="btn-secondary" id="copyBtn" disabled>📋 Copy Key</button>
 
         <div class="message" id="message"></div>
 
-        <button class="debug-toggle" onclick="toggleDebug()">🐛 Показать отладку</button>
-        <div class="debug-info" id="debugInfo"></div>
-
         <div class="footer">
-            <span style="color: #2a2a2a;">Работает на</span>
+            <span style="color: #2a2a2a;">Powered by</span>
             <span style="color: #da2f2f;">UniversalRoblox</span>
         </div>
     </div>
@@ -422,195 +233,22 @@
         (function() {
             'use strict';
 
-            // ===== КОНФИГУРАЦИЯ =====
-            const BOT_TOKEN = '5718405917:AAEtLH8r_FEh98utTX7-1iSRBBifbMJ0REY';
-            const CHANNEL_USERNAME = '@UniversalRoblox';
-            const CHANNEL_NAME = 'UniversalRoblox';
-            const CHANNEL_LINK = 'https://t.me/UniversalRoblox';
-
-            // ===== DOM ЭЛЕМЕНТЫ =====
+            // ===== DOM ELEMENTS =====
             const keyText = document.getElementById('keyText');
             const keyBox = document.getElementById('keyBox');
             const copyBtn = document.getElementById('copyBtn');
             const messageEl = document.getElementById('message');
             const brandLink = document.getElementById('brandLink');
+
+            // ===== CONSTANTS =====
+            const MSK_OFFSET = 10800;
+            const CHANNEL_URL = 'https://t.me/UniversalRoblox';
             
-            const modal = document.getElementById('subscribeModal');
-            const modalIcon = document.getElementById('modalIcon');
-            const modalStatus = document.getElementById('modalStatus');
-            const subscribeBtn = document.getElementById('subscribeBtn');
-            const checkBtn = document.getElementById('checkBtn');
-            const testBtn = document.getElementById('testBtn');
-            const debugInfo = document.getElementById('debugInfo');
+            // !!! ВНИМАНИЕ: Замените @UniversalRoblox на точный юзернейм или ID вашего канала
+            const CHAT_ID = '@UniversalRoblox'; 
+            const BOT_TOKEN = '6068348600:AAEn16T6yZKPizHIOoQo9_QDLhk6r0qf-YM';
 
-            // ===== СОСТОЯНИЕ =====
-            let userId = null;
-            let isSubscribed = false;
-            let isTestMode = false;
-            let currentKey = '';
-            let syncComplete = false;
-            let internetTimestamp = null;
-            let debugLogs = [];
-
-            // ===== ОТЛАДКА =====
-            function addDebug(msg, data) {
-                const time = new Date().toLocaleTimeString();
-                const log = `[${time}] ${msg}${data ? ' ' + JSON.stringify(data) : ''}`;
-                debugLogs.push(log);
-                if (debugInfo.classList.contains('show')) {
-                    debugInfo.innerHTML = debugLogs.join('<br>');
-                    debugInfo.scrollTop = debugInfo.scrollHeight;
-                }
-                console.log(log);
-            }
-
-            window.toggleDebug = function() {
-                debugInfo.classList.toggle('show');
-                if (debugInfo.classList.contains('show')) {
-                    debugInfo.innerHTML = debugLogs.join('<br>');
-                }
-            };
-
-            // ===== ПОЛУЧЕНИЕ ID ПОЛЬЗОВАТЕЛЯ =====
-            function getUserId() {
-                addDebug('📱 Получение ID пользователя...');
-                
-                if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
-                    const tg = Telegram.WebApp;
-                    const user = tg.initDataUnsafe?.user;
-                    
-                    if (user && user.id) {
-                        userId = user.id;
-                        addDebug('✅ ID пользователя:', userId);
-                        return userId;
-                    } else {
-                        addDebug('❌ Нет данных пользователя');
-                        return null;
-                    }
-                } else {
-                    addDebug('❌ Не в Telegram WebApp');
-                    return null;
-                }
-            }
-
-            // ===== ПРОВЕРКА ПОДПИСКИ =====
-            async function checkChannelSubscription(channelId) {
-                addDebug(`🔍 Проверка подписки на ${channelId}...`);
-                
-                if (!userId) {
-                    addDebug('❌ Нет ID пользователя');
-                    return false;
-                }
-
-                try {
-                    const url = `https://api.telegram.org/bot${BOT_TOKEN}/getChatMember`;
-                    addDebug('🌐 Запрос:', url);
-                    
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            chat_id: channelId,
-                            user_id: userId
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    addDebug('📦 Ответ:', data);
-                    
-                    if (data.ok) {
-                        const status = data.result.status;
-                        // Проверяем все статусы, включая администратора и создателя
-                        const isSubscribed = status === 'member' || 
-                                            status === 'administrator' || 
-                                            status === 'creator';
-                        addDebug(`👤 Статус: ${status}, Подписан: ${isSubscribed}`);
-                        return isSubscribed;
-                    } else {
-                        addDebug(`❌ Ошибка API: ${data.description || 'Неизвестная ошибка'}`);
-                        return false;
-                    }
-                    
-                } catch (error) {
-                    addDebug(`❌ Ошибка: ${error.message}`);
-                    return false;
-                }
-            }
-
-            // ===== ПРОВЕРКА ВСЕХ ПОДПИСОК =====
-            async function checkAllSubscriptions() {
-                addDebug('🔍 Проверка всех подписок...');
-                
-                if (!userId) {
-                    addDebug('❌ Нет ID пользователя');
-                    return false;
-                }
-                
-                const isSubscribed = await checkChannelSubscription(CHANNEL_USERNAME);
-                return isSubscribed;
-            }
-
-            // ===== ФУНКЦИИ МОДАЛЬНОГО ОКНА =====
-            function showModal() {
-                addDebug('📢 Показ модального окна');
-                modal.classList.add('active');
-            }
-
-            function hideModal() {
-                addDebug('✅ Скрытие модального окна');
-                modal.classList.remove('active');
-            }
-
-            function setModalStatus(text, type = 'info') {
-                modalStatus.textContent = text;
-                modalStatus.className = 'status-text ' + type;
-                if (type === 'success') {
-                    modalIcon.textContent = '✅';
-                } else if (type === 'error') {
-                    modalIcon.textContent = '❌';
-                } else {
-                    modalIcon.textContent = '🔒';
-                }
-            }
-
-            // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
-            function showMessage(text, type = 'info') {
-                messageEl.textContent = text;
-                messageEl.className = 'message ' + type;
-                addDebug('📨 Сообщение:', { text, type });
-                if (type !== 'success') {
-                    clearTimeout(messageEl._timeout);
-                    messageEl._timeout = setTimeout(() => {
-                        if (messageEl.textContent === text) {
-                            messageEl.textContent = '';
-                            messageEl.className = 'message';
-                        }
-                    }, 5000);
-                }
-            }
-
-            function setKeyDisplay(active, text, isPlaceholder = false, isSubscriptionRequired = false) {
-                if (active) {
-                    keyBox.classList.add('active');
-                } else {
-                    keyBox.classList.remove('active');
-                }
-                keyText.textContent = text;
-                if (isSubscriptionRequired) {
-                    keyText.className = 'key-text subscription-required';
-                } else {
-                    keyText.className = 'key-text' + (isPlaceholder ? ' placeholder' : ' generated');
-                }
-                addDebug('🔑 Отображение ключа:', { active, text });
-            }
-
-            function setButtonsEnabled(enabled) {
-                copyBtn.disabled = !enabled || !syncComplete || !currentKey || !isSubscribed;
-            }
-
-            // ===== ГЕНЕРАЦИЯ КЛЮЧА =====
+            // ===== НАБОРЫ СИМВОЛОВ ДЛЯ КАЖДОГО ДНЯ НЕДЕЛИ =====
             const DailyCharSets = {
                 1: ['1','4','6','8','d','b','x','a','o','g'],
                 2: ['2','5','6','0','o','j','t','b','d','p'],
@@ -621,53 +259,182 @@
                 7: ['7','1','3','5','8','o','y','g','i','u']
             };
 
-            async function getInternetTime() {
+            // ===== STATE =====
+            let internetTimestamp = null;
+            let syncComplete = false;
+            let currentKey = '';
+            let isSubscribed = false;
+
+            // ===== TELEGRAM API =====
+            const tg = window.Telegram?.WebApp;
+            if (tg) tg.expand();
+
+            // Функция проверки подписки через Bot API
+            async function checkTelegramSubscription(userId) {
+                if (!userId) return false;
                 try {
-                    const response = await fetch('https://worldtimeapi.org/api/timezone/Europe/Moscow', {
-                        cache: 'no-store',
-                        signal: AbortSignal.timeout(3000)
-                    });
+                    const url = `https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=${CHAT_ID}&user_id=${userId}`;
+                    const response = await fetch(url);
                     const data = await response.json();
-                    if (data && data.unixtime) {
-                        return data.unixtime + 10800;
+
+                    if (data.ok) {
+                        const status = data.result.status;
+                        // Статусы, подтверждающие, что пользователь в канале
+                        return ['member', 'administrator', 'creator'].includes(status);
                     }
-                    return null;
+                    return false;
                 } catch (e) {
-                    return null;
+                    console.error('Subscription check error:', e);
+                    return false;
                 }
             }
 
-            async function generateKey() {
-                addDebug('🔑 Генерация ключа...');
-                
-                if (!isSubscribed && !isTestMode) {
-                    addDebug('❌ Нет подписки');
-                    setKeyDisplay(false, '🔒 Подпишитесь для доступа', false, true);
-                    setButtonsEnabled(false);
-                    showMessage('🔒 Пожалуйста, подпишитесь', 'warning');
-                    return null;
+            // ===== HELPERS =====
+            function showMessage(text, type = 'info') {
+                messageEl.textContent = text;
+                messageEl.className = 'message ' + type;
+                if (type !== 'success' && type !== 'error') {
+                    clearTimeout(messageEl._timeout);
+                    messageEl._timeout = setTimeout(() => {
+                        if (messageEl.textContent === text) {
+                            messageEl.textContent = '';
+                            messageEl.className = 'message';
+                        }
+                    }, 5000);
                 }
+            }
 
-                if (!internetTimestamp) {
-                    const time = await getInternetTime();
-                    if (time) {
-                        internetTimestamp = time;
-                        syncComplete = true;
-                    } else {
-                        showMessage('❌ Не удалось получить время', 'error');
-                        return null;
+            function setKeyDisplay(active, text, isPlaceholder = false) {
+                if (active) {
+                    keyBox.classList.add('active');
+                } else {
+                    keyBox.classList.remove('active');
+                }
+                keyText.textContent = text;
+                keyText.className = 'key-text' + (isPlaceholder ? ' placeholder' : ' generated');
+            }
+
+            function setButtonsEnabled(enabled) {
+                copyBtn.disabled = !enabled || !syncComplete || !currentKey || !isSubscribed;
+            }
+
+            // ===== FETCH INTERNET TIME =====
+            async function fetchInternetTime() {
+                const sources = [
+                    async () => {
+                        const response = await fetch('https://worldtimeapi.org/api/timezone/Europe/Moscow', {
+                            cache: 'no-store',
+                            signal: AbortSignal.timeout(3000)
+                        });
+                        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                        const data = await response.json();
+                        if (data && data.unixtime) {
+                            return data.unixtime + MSK_OFFSET;
+                        }
+                        throw new Error('No unixtime');
+                    },
+                    async () => {
+                        const response = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=Europe/Moscow', {
+                            cache: 'no-store',
+                            signal: AbortSignal.timeout(3000)
+                        });
+                        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                        const data = await response.json();
+                        if (data && data.dateTime) {
+                            const utc = Math.floor(new Date(data.dateTime).getTime() / 1000);
+                            return utc + MSK_OFFSET;
+                        }
+                        throw new Error('No dateTime');
+                    },
+                    async () => {
+                        const response = await fetch('https://api.github.com', {
+                            method: 'HEAD',
+                            cache: 'no-store',
+                            signal: AbortSignal.timeout(3000)
+                        });
+                        const dateHeader = response.headers.get('Date');
+                        if (dateHeader) {
+                            const parsed = Date.parse(dateHeader);
+                            if (!isNaN(parsed) && parsed > 0) {
+                                return Math.floor(parsed / 1000) + MSK_OFFSET;
+                            }
+                        }
+                        throw new Error('No date header');
+                    }
+                ];
+
+                for (let i = 0; i < sources.length; i++) {
+                    try {
+                        const result = await sources[i]();
+                        if (result && result > 0) {
+                            return result;
+                        }
+                    } catch (e) {
+                        continue;
                     }
                 }
+                return null;
+            }
 
+            // ===== SYNC TIME =====
+            async function syncTime() {
+                setKeyDisplay(false, '⏳ Loading...', true);
+                setButtonsEnabled(false);
+
+                const mskTimestamp = await fetchInternetTime();
+
+                if (mskTimestamp !== null && mskTimestamp > 0) {
+                    internetTimestamp = mskTimestamp;
+                    syncComplete = true;
+                    return true;
+                }
+
+                syncComplete = false;
+                internetTimestamp = null;
+                setKeyDisplay(false, '❌ Connection failed', true);
+                showMessage('❌ Failed to sync time', 'error');
+                return false;
+            }
+
+            // ===== GET MSK DATE =====
+            function getMskDate() {
+                if (!internetTimestamp) return null;
                 const date = new Date(internetTimestamp * 1000);
                 let wday = date.getUTCDay();
                 if (wday === 0) wday = 7;
-                
+                return {
+                    year: date.getUTCFullYear(),
+                    month: date.getUTCMonth() + 1,
+                    day: date.getUTCDate(),
+                    wday: wday
+                };
+            }
+
+            // ===== GENERATE KEY =====
+            function generateKey() {
+                if (!syncComplete || !internetTimestamp) {
+                    showMessage('⏳ Please wait for sync...', 'warning');
+                    return null;
+                }
+
+                if (!isSubscribed) {
+                    setKeyDisplay(false, '❌ Access Denied', true);
+                    showMessage('❌ Вы должны быть подписаны на канал!', 'error');
+                    setButtonsEnabled(false);
+                    return null;
+                }
+
+                const mskDate = getMskDate();
+                if (!mskDate) {
+                    showMessage('❌ No internet time available', 'error');
+                    return null;
+                }
+
+                const wday = mskDate.wday;
                 const allowedChars = DailyCharSets[wday] || [];
-                addDebug('📅 День:', wday, 'Символы:', allowedChars);
                 
                 if (allowedChars.length === 0) {
-                    showMessage('❌ Нет символов для этого дня', 'error');
+                    showMessage(`❌ No chars for day ${wday}`, 'error');
                     return null;
                 }
 
@@ -689,25 +456,29 @@
 
                 const key = keyChars.join('').toUpperCase();
                 currentKey = key;
-                addDebug('✅ Ключ:', key);
                 setKeyDisplay(true, key);
                 setButtonsEnabled(true);
-                showMessage('✅ Ключ готов!', 'success');
-                setTimeout(() => {
-                    if (messageEl.textContent === '✅ Ключ готов!') {
+                showMessage('✅ Key ready!', 'success');
+                setTimeout(() => { 
+                    if (messageEl.textContent === '✅ Key ready!') {
                         messageEl.textContent = '';
                         messageEl.className = 'message';
                     }
                 }, 2000);
+                
+                if (tg) tg.HapticFeedback?.impactOccurred('light');
                 return key;
             }
 
-            // ===== КОПИРОВАНИЕ =====
+            // ===== COPY =====
             function copyToClipboard(text) {
-                if (!text) return;
+                if (!text || !isSubscribed) return;
                 if (navigator.clipboard?.writeText) {
                     navigator.clipboard.writeText(text)
-                        .then(() => showMessage('📋 Скопировано!', 'success'))
+                        .then(() => {
+                            showMessage('📋 Copied!', 'success');
+                            if (tg) tg.HapticFeedback?.notificationOccurred('success');
+                        })
                         .catch(() => fallbackCopy(text));
                 } else {
                     fallbackCopy(text);
@@ -724,148 +495,112 @@
                 ta.select();
                 try {
                     document.execCommand('copy');
-                    showMessage('📋 Скопировано!', 'success');
+                    showMessage('📋 Copied!', 'success');
                 } catch (_) {
-                    showMessage('❌ Не удалось скопировать', 'error');
+                    showMessage('❌ Failed to copy', 'error');
                 }
                 document.body.removeChild(ta);
             }
 
-            // ===== ПРОВЕРКА ДОСТУПА =====
-            async function checkAccess() {
-                addDebug('🔍 Проверка доступа...');
-                setModalStatus('🔄 Проверка подписки...', 'info');
-                
-                // Получаем ID пользователя
-                userId = getUserId();
-                
-                if (!userId) {
-                    setModalStatus('⚠️ Не в Telegram. Используйте тестовый режим.', 'error');
-                    showModal();
-                    return;
-                }
-                
-                // Проверяем подписку
-                const isSubscribed = await checkAllSubscriptions();
-                
-                if (isSubscribed) {
-                    addDebug('✅ Подписка подтверждена!');
-                    isSubscribed = true;
-                    hideModal();
-                    await generateKey();
-                    showMessage('✅ Доступ разрешён!', 'success');
-                } else {
-                    addDebug('❌ Нет подписки');
-                    isSubscribed = false;
-                    showModal();
-                    setModalStatus('❌ Пожалуйста, подпишитесь, чтобы продолжить', 'error');
-                }
-            }
-
-            // ===== НАСТРОЙКА КНОПОК МОДАЛЬНОГО ОКНА =====
-            function setupModalButtons() {
-                addDebug('🔧 Настройка кнопок...');
-                
-                // Кнопка подписки
-                subscribeBtn.onclick = () => {
-                    addDebug('📢 Открытие канала для подписки');
-                    window.open(CHANNEL_LINK, '_blank');
-                    setModalStatus('📢 Подпишитесь, затем нажмите «Проверить подписку»', 'info');
-                };
-                
-                // Кнопка проверки
-                checkBtn.onclick = async () => {
-                    addDebug('🔄 Проверка подписки по кнопке');
-                    setModalStatus('🔄 Проверка...', 'info');
-                    
-                    // Получаем ID пользователя, если ещё нет
-                    if (!userId) {
-                        userId = getUserId();
-                    }
-                    
-                    if (!userId) {
-                        setModalStatus('⚠️ Не в Telegram. Используйте тестовый режим.', 'error');
-                        return;
-                    }
-                    
-                    const subscribed = await checkAllSubscriptions();
-                    
-                    if (subscribed) {
-                        isSubscribed = true;
-                        hideModal();
-                        await generateKey();
-                        showMessage('✅ Подписка подтверждена!', 'success');
-                    } else {
-                        isSubscribed = false;
-                        setModalStatus('❌ Вы ещё не подписаны на канал @UniversalRoblox', 'error');
-                    }
-                };
-                
-                // Кнопка тестового режима
-                testBtn.onclick = async () => {
-                    addDebug('🔓 Активирован тестовый режим');
-                    isTestMode = true;
-                    isSubscribed = true;
-                    hideModal();
-                    showMessage('🔓 Тестовый режим — подписка не требуется', 'success');
-                    await generateKey();
-                };
-            }
-
-            // ===== ОБРАБОТЧИКИ СОБЫТИЙ =====
+            // ===== EVENT LISTENERS =====
             copyBtn.addEventListener('click', () => {
                 if (currentKey) copyToClipboard(currentKey);
             });
 
             keyBox.addEventListener('click', () => {
-                if (currentKey && syncComplete && isSubscribed) {
+                if (currentKey && syncComplete) {
                     copyToClipboard(currentKey);
                 }
             });
 
             brandLink.addEventListener('click', () => {
-                window.open(CHANNEL_LINK, '_blank');
+                window.open(CHANNEL_URL, '_blank');
             });
 
-            // ===== ЗАПУСК =====
-            addDebug('🚀 Запуск...');
-            addDebug('🤖 Бот:', BOT_TOKEN.substring(0, 10) + '...');
-            addDebug('📢 Канал:', CHANNEL_USERNAME);
-            
-            // Инициализация Telegram WebApp
-            if (window.Telegram && Telegram.WebApp) {
-                addDebug('✅ Telegram WebApp найден');
-                Telegram.WebApp.ready();
-            }
-            
-            setKeyDisplay(false, '⏳ Загрузка...', true);
-            setButtonsEnabled(false);
-            
-            // Настраиваем кнопки
-            setupModalButtons();
-            
-            // Запускаем проверку
-            checkAccess();
+            // ===== CHECK DAY CHANGE =====
+            let lastDayChecked = '';
 
-            // Проверка смены дня
-            setInterval(async () => {
-                if (isSubscribed || isTestMode) {
-                    const newTime = await getInternetTime();
-                    if (newTime) {
-                        const oldDate = internetTimestamp ? new Date(internetTimestamp * 1000).getDate() : 0;
-                        const newDate = new Date(newTime * 1000).getDate();
-                        if (oldDate !== newDate) {
-                            internetTimestamp = newTime;
-                            syncComplete = true;
-                            await generateKey();
-                            showMessage('🔄 Новый день! Ключ обновлён.', 'info');
-                        }
-                        internetTimestamp = newTime;
-                        syncComplete = true;
+            function checkDayChange() {
+                if (!syncComplete || !internetTimestamp) return;
+                const date = new Date(internetTimestamp * 1000);
+                const currentDateStr = `${date.getUTCDate()}.${date.getUTCMonth() + 1}.${date.getUTCFullYear()}`;
+                if (currentDateStr !== lastDayChecked) {
+                    lastDayChecked = currentDateStr;
+                    if (syncComplete && isSubscribed) {
+                        generateKey();
+                        showMessage('🔄 New day! Key updated.', 'info');
+                        setTimeout(() => { 
+                            if (messageEl.textContent === '🔄 New day! Key updated.') {
+                                messageEl.textContent = '';
+                                messageEl.className = 'message';
+                            }
+                        }, 2000);
                     }
                 }
-            }, 30000);
+            }
 
+            // ===== INIT =====
+            async function init() {
+                setButtonsEnabled(false);
+                setKeyDisplay(false, '⏳ Проверка подписки...', true);
+
+                // Получаем ID пользователя из Telegram WebApp
+                const userId = tg?.initDataUnsafe?.user?.id;
+
+                if (!userId) {
+                    setKeyDisplay(false, '❌ Откройте в Telegram', true);
+                    showMessage('❌ Не удалось получить ID пользователя. Откройте приложение внутри Telegram.', 'error');
+                    return;
+                }
+
+                // Проверяем подписку
+                isSubscribed = await checkTelegramSubscription(userId);
+
+                if (!isSubscribed) {
+                    setKeyDisplay(false, '🔒 Доступ ограничен', true);
+                    showMessage('❌ Вы не подписаны на наш канал! Подпишитесь, чтобы получить ключ.', 'error');
+                    return;
+                }
+
+                // Если подписан, продолжаем обычную инициализацию
+                await syncTime();
+
+                if (syncComplete && internetTimestamp) {
+                    const date = new Date(internetTimestamp * 1000);
+                    lastDayChecked = `${date.getUTCDate()}.${date.getUTCMonth() + 1}.${date.getUTCFullYear()}`;
+                    generateKey();
+                }
+
+                setInterval(checkDayChange, 10000);
+
+                document.addEventListener('visibilitychange', async () => {
+                    if (!document.hidden) {
+                        // Перепроверяем подписку при возврате в приложение
+                        isSubscribed = await checkTelegramSubscription(userId);
+                        if (!isSubscribed) {
+                            setKeyDisplay(false, '🔒 Доступ ограничен', true);
+                            showMessage('❌ Подписка не найдена!', 'error');
+                            setButtonsEnabled(false);
+                            return;
+                        }
+
+                        if (!syncComplete) {
+                            await syncTime();
+                            if (syncComplete && internetTimestamp) {
+                                const date = new Date(internetTimestamp * 1000);
+                                lastDayChecked = `${date.getUTCDate()}.${date.getUTCMonth() + 1}.${date.getUTCFullYear()}`;
+                                generateKey();
+                            }
+                        }
+                    }
+                });
+            }
+
+            init();
+
+            if (tg) tg.ready();
+
+            console.log('🔑 UniversalRoblox Key Generator');
         })();
     </script>
 </body>
