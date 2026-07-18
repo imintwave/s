@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UniversalRoblox Key</title>
-    <!-- Подключаем официальный скрипт Telegram WebApp -->
+    <!-- Connecting official Telegram WebApp script -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -131,7 +131,7 @@
             color: #888;
         }
 
-        /* Стиль для кнопки подписки (акцентная красная) */
+        /* Accent red button for subscribing */
         .btn-primary {
             width: 100%;
             padding: 14px;
@@ -144,7 +144,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-bottom: 12px;
-            display: none; /* По умолчанию скрыта */
+            display: none;
         }
 
         .btn-primary:hover {
@@ -156,23 +156,25 @@
             transform: scale(0.97);
         }
 
+        /* Bordered buttons for secondary actions */
         .btn-secondary {
             width: 100%;
             padding: 14px;
             background: transparent;
-            color: #666;
+            color: #aaa;
             border: 1px solid #1e1e1e;
             border-radius: 12px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin-bottom: 12px;
         }
 
         .btn-secondary:hover:not(:disabled) {
             background: #141414;
             border-color: #333;
-            color: #aaa;
+            color: #fff;
         }
 
         .btn-secondary:active:not(:disabled) {
@@ -183,6 +185,11 @@
             opacity: 0.3;
             cursor: not-allowed;
             transform: none !important;
+            color: #666;
+        }
+        
+        #copyBtn {
+            margin-bottom: 0; /* Clear margin for the last button */
         }
 
         .message {
@@ -244,9 +251,9 @@
             <div class="copy-hint">Click to copy</div>
         </div>
 
-        <!-- Добавлена кнопка подписки -->
-        <button class="btn-primary" id="subBtn">📢 Подписаться на канал</button>
-
+        <!-- Action Buttons -->
+        <button class="btn-primary" id="subBtn">📢 Subscribe to Channel</button>
+        <button class="btn-secondary" id="checkSubBtn" style="display: none;">🔄 Check Subscription</button>
         <button class="btn-secondary" id="copyBtn" disabled>📋 Copy Key</button>
 
         <div class="message" id="message"></div>
@@ -265,7 +272,8 @@
             const keyText = document.getElementById('keyText');
             const keyBox = document.getElementById('keyBox');
             const copyBtn = document.getElementById('copyBtn');
-            const subBtn = document.getElementById('subBtn'); // Получаем кнопку подписки
+            const subBtn = document.getElementById('subBtn');
+            const checkSubBtn = document.getElementById('checkSubBtn');
             const messageEl = document.getElementById('message');
             const brandLink = document.getElementById('brandLink');
 
@@ -276,7 +284,7 @@
             const CHAT_ID = '@UniversalRoblox'; 
             const BOT_TOKEN = '6068348600:AAEn16T6yZKPizHIOoQo9_QDLhk6r0qf-YM';
 
-            // ===== НАБОРЫ СИМВОЛОВ ДЛЯ КАЖДОГО ДНЯ НЕДЕЛИ =====
+            // ===== CHARACTER SETS FOR EACH DAY OF THE WEEK =====
             const DailyCharSets = {
                 1: ['1','4','6','8','d','b','x','a','o','g'],
                 2: ['2','5','6','0','o','j','t','b','d','p'],
@@ -297,7 +305,7 @@
             const tg = window.Telegram?.WebApp;
             if (tg) tg.expand();
 
-            // Функция проверки подписки
+            // Function to check subscription status
             async function checkTelegramSubscription(userId) {
                 if (!userId) return false;
                 try {
@@ -427,7 +435,7 @@
 
                 if (!isSubscribed) {
                     setKeyDisplay(false, '❌ Access Denied', true);
-                    showMessage('❌ Вы должны быть подписаны на канал!', 'error');
+                    showMessage('❌ You must be subscribed to the channel!', 'error');
                     setButtonsEnabled(false);
                     return null;
                 }
@@ -510,6 +518,19 @@
                 document.body.removeChild(ta);
             }
 
+            // ===== PROCESS VALID SUBSCRIPTION =====
+            async function handleValidSubscription() {
+                subBtn.style.display = 'none';
+                checkSubBtn.style.display = 'none';
+                await syncTime();
+
+                if (syncComplete && internetTimestamp) {
+                    const date = new Date(internetTimestamp * 1000);
+                    lastDayChecked = `${date.getUTCDate()}.${date.getUTCMonth() + 1}.${date.getUTCFullYear()}`;
+                    generateKey();
+                }
+            }
+
             // ===== EVENT LISTENERS =====
             copyBtn.addEventListener('click', () => {
                 if (currentKey) copyToClipboard(currentKey);
@@ -529,12 +550,29 @@
                 }
             });
 
-            // Клик по кнопке «Подписаться»
             subBtn.addEventListener('click', () => {
                 if (tg) {
                     tg.openTelegramLink(CHANNEL_URL);
                 } else {
                     window.open(CHANNEL_URL, '_blank');
+                }
+            });
+
+            // "Check Subscription" manual action
+            checkSubBtn.addEventListener('click', async () => {
+                const userId = tg?.initDataUnsafe?.user?.id;
+                if (!userId) return;
+
+                checkSubBtn.disabled = true;
+                showMessage('🔄 Checking subscription...', 'info');
+
+                isSubscribed = await checkTelegramSubscription(userId);
+
+                checkSubBtn.disabled = false;
+                if (isSubscribed) {
+                    await handleValidSubscription();
+                } else {
+                    showMessage('❌ Subscription not found. Please join the channel first.', 'error');
                 }
             });
 
@@ -556,58 +594,45 @@
             // ===== INIT =====
             async function init() {
                 setButtonsEnabled(false);
-                subBtn.style.display = 'none'; // Скрываем кнопку на время загрузки
-                setKeyDisplay(false, '⏳ Проверка подписки...', true);
+                subBtn.style.display = 'none';
+                checkSubBtn.style.display = 'none';
+                setKeyDisplay(false, '⏳ Verifying...', true);
 
                 const userId = tg?.initDataUnsafe?.user?.id;
 
                 if (!userId) {
-                    setKeyDisplay(false, '❌ Откройте в Telegram', true);
-                    showMessage('❌ Откройте приложение внутри Telegram.', 'error');
+                    setKeyDisplay(false, '❌ Use Telegram', true);
+                    showMessage('❌ Please open this app inside Telegram.', 'error');
                     return;
                 }
 
-                // Проверяем подписку
                 isSubscribed = await checkTelegramSubscription(userId);
 
                 if (!isSubscribed) {
-                    setKeyDisplay(false, '🔒 Доступ ограничен', true);
-                    showMessage('❌ Для получения ключа подпишитесь на канал.', 'error');
-                    subBtn.style.display = 'block'; // Показываем кнопку подписки
+                    setKeyDisplay(false, '🔒 Access Denied', true);
+                    showMessage('❌ Please subscribe to our channel to get the key.', 'error');
+                    subBtn.style.display = 'block';
+                    checkSubBtn.style.display = 'block'; // Show check button
                     return;
                 }
 
-                // Если подписан — прячем кнопку подписки и генерируем ключ
-                subBtn.style.display = 'none';
-                await syncTime();
-
-                if (syncComplete && internetTimestamp) {
-                    const date = new Date(internetTimestamp * 1000);
-                    lastDayChecked = `${date.getUTCDate()}.${date.getUTCMonth() + 1}.${date.getUTCFullYear()}`;
-                    generateKey();
-                }
-
+                await handleValidSubscription();
                 setInterval(checkDayChange, 10000);
 
-                // Авто-перепроверка при возвращении пользователя в приложение (после подписки)
+                // Auto re-check when user returns to the app
                 document.addEventListener('visibilitychange', async () => {
                     if (!document.hidden) {
                         const subCheckBefore = isSubscribed;
                         isSubscribed = await checkTelegramSubscription(userId);
                         
                         if (!isSubscribed) {
-                            setKeyDisplay(false, '🔒 Доступ ограничен', true);
+                            setKeyDisplay(false, '🔒 Access Denied', true);
                             subBtn.style.display = 'block';
+                            checkSubBtn.style.display = 'block';
                             setButtonsEnabled(false);
                         } else {
-                            subBtn.style.display = 'none';
                             if (!subCheckBefore || !syncComplete) {
-                                await syncTime();
-                                if (syncComplete && internetTimestamp) {
-                                    const date = new Date(internetTimestamp * 1000);
-                                    lastDayChecked = `${date.getUTCDate()}.${date.getUTCMonth() + 1}.${date.getUTCFullYear()}`;
-                                    generateKey();
-                                }
+                                await handleValidSubscription();
                             }
                         }
                     }
