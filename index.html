@@ -131,6 +131,31 @@
             color: #888;
         }
 
+        /* Стиль для кнопки подписки (акцентная красная) */
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: #da2f2f;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+            display: none; /* По умолчанию скрыта */
+        }
+
+        .btn-primary:hover {
+            background: #b82525;
+            box-shadow: 0 0 20px rgba(218, 47, 47, 0.2);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+
         .btn-secondary {
             width: 100%;
             padding: 14px;
@@ -219,6 +244,9 @@
             <div class="copy-hint">Click to copy</div>
         </div>
 
+        <!-- Добавлена кнопка подписки -->
+        <button class="btn-primary" id="subBtn">📢 Подписаться на канал</button>
+
         <button class="btn-secondary" id="copyBtn" disabled>📋 Copy Key</button>
 
         <div class="message" id="message"></div>
@@ -237,6 +265,7 @@
             const keyText = document.getElementById('keyText');
             const keyBox = document.getElementById('keyBox');
             const copyBtn = document.getElementById('copyBtn');
+            const subBtn = document.getElementById('subBtn'); // Получаем кнопку подписки
             const messageEl = document.getElementById('message');
             const brandLink = document.getElementById('brandLink');
 
@@ -244,7 +273,6 @@
             const MSK_OFFSET = 10800;
             const CHANNEL_URL = 'https://t.me/UniversalRoblox';
             
-            // !!! ВНИМАНИЕ: Замените @UniversalRoblox на точный юзернейм или ID вашего канала
             const CHAT_ID = '@UniversalRoblox'; 
             const BOT_TOKEN = '6068348600:AAEn16T6yZKPizHIOoQo9_QDLhk6r0qf-YM';
 
@@ -269,7 +297,7 @@
             const tg = window.Telegram?.WebApp;
             if (tg) tg.expand();
 
-            // Функция проверки подписки через Bot API
+            // Функция проверки подписки
             async function checkTelegramSubscription(userId) {
                 if (!userId) return false;
                 try {
@@ -279,7 +307,6 @@
 
                     if (data.ok) {
                         const status = data.result.status;
-                        // Статусы, подтверждающие, что пользователь в канале
                         return ['member', 'administrator', 'creator'].includes(status);
                     }
                     return false;
@@ -328,9 +355,7 @@
                         });
                         if (!response.ok) throw new Error(`HTTP ${response.status}`);
                         const data = await response.json();
-                        if (data && data.unixtime) {
-                            return data.unixtime + MSK_OFFSET;
-                        }
+                        if (data && data.unixtime) return data.unixtime + MSK_OFFSET;
                         throw new Error('No unixtime');
                     },
                     async () => {
@@ -345,30 +370,13 @@
                             return utc + MSK_OFFSET;
                         }
                         throw new Error('No dateTime');
-                    },
-                    async () => {
-                        const response = await fetch('https://api.github.com', {
-                            method: 'HEAD',
-                            cache: 'no-store',
-                            signal: AbortSignal.timeout(3000)
-                        });
-                        const dateHeader = response.headers.get('Date');
-                        if (dateHeader) {
-                            const parsed = Date.parse(dateHeader);
-                            if (!isNaN(parsed) && parsed > 0) {
-                                return Math.floor(parsed / 1000) + MSK_OFFSET;
-                            }
-                        }
-                        throw new Error('No date header');
                     }
                 ];
 
                 for (let i = 0; i < sources.length; i++) {
                     try {
                         const result = await sources[i]();
-                        if (result && result > 0) {
-                            return result;
-                        }
+                        if (result && result > 0) return result;
                     } catch (e) {
                         continue;
                     }
@@ -514,7 +522,20 @@
             });
 
             brandLink.addEventListener('click', () => {
-                window.open(CHANNEL_URL, '_blank');
+                if (tg) {
+                    tg.openTelegramLink(CHANNEL_URL);
+                } else {
+                    window.open(CHANNEL_URL, '_blank');
+                }
+            });
+
+            // Клик по кнопке «Подписаться»
+            subBtn.addEventListener('click', () => {
+                if (tg) {
+                    tg.openTelegramLink(CHANNEL_URL);
+                } else {
+                    window.open(CHANNEL_URL, '_blank');
+                }
             });
 
             // ===== CHECK DAY CHANGE =====
@@ -528,13 +549,6 @@
                     lastDayChecked = currentDateStr;
                     if (syncComplete && isSubscribed) {
                         generateKey();
-                        showMessage('🔄 New day! Key updated.', 'info');
-                        setTimeout(() => { 
-                            if (messageEl.textContent === '🔄 New day! Key updated.') {
-                                messageEl.textContent = '';
-                                messageEl.className = 'message';
-                            }
-                        }, 2000);
                     }
                 }
             }
@@ -542,14 +556,14 @@
             // ===== INIT =====
             async function init() {
                 setButtonsEnabled(false);
+                subBtn.style.display = 'none'; // Скрываем кнопку на время загрузки
                 setKeyDisplay(false, '⏳ Проверка подписки...', true);
 
-                // Получаем ID пользователя из Telegram WebApp
                 const userId = tg?.initDataUnsafe?.user?.id;
 
                 if (!userId) {
                     setKeyDisplay(false, '❌ Откройте в Telegram', true);
-                    showMessage('❌ Не удалось получить ID пользователя. Откройте приложение внутри Telegram.', 'error');
+                    showMessage('❌ Откройте приложение внутри Telegram.', 'error');
                     return;
                 }
 
@@ -558,11 +572,13 @@
 
                 if (!isSubscribed) {
                     setKeyDisplay(false, '🔒 Доступ ограничен', true);
-                    showMessage('❌ Вы не подписаны на наш канал! Подпишитесь, чтобы получить ключ.', 'error');
+                    showMessage('❌ Для получения ключа подпишитесь на канал.', 'error');
+                    subBtn.style.display = 'block'; // Показываем кнопку подписки
                     return;
                 }
 
-                // Если подписан, продолжаем обычную инициализацию
+                // Если подписан — прячем кнопку подписки и генерируем ключ
+                subBtn.style.display = 'none';
                 await syncTime();
 
                 if (syncComplete && internetTimestamp) {
@@ -573,23 +589,25 @@
 
                 setInterval(checkDayChange, 10000);
 
+                // Авто-перепроверка при возвращении пользователя в приложение (после подписки)
                 document.addEventListener('visibilitychange', async () => {
                     if (!document.hidden) {
-                        // Перепроверяем подписку при возврате в приложение
+                        const subCheckBefore = isSubscribed;
                         isSubscribed = await checkTelegramSubscription(userId);
+                        
                         if (!isSubscribed) {
                             setKeyDisplay(false, '🔒 Доступ ограничен', true);
-                            showMessage('❌ Подписка не найдена!', 'error');
+                            subBtn.style.display = 'block';
                             setButtonsEnabled(false);
-                            return;
-                        }
-
-                        if (!syncComplete) {
-                            await syncTime();
-                            if (syncComplete && internetTimestamp) {
-                                const date = new Date(internetTimestamp * 1000);
-                                lastDayChecked = `${date.getUTCDate()}.${date.getUTCMonth() + 1}.${date.getUTCFullYear()}`;
-                                generateKey();
+                        } else {
+                            subBtn.style.display = 'none';
+                            if (!subCheckBefore || !syncComplete) {
+                                await syncTime();
+                                if (syncComplete && internetTimestamp) {
+                                    const date = new Date(internetTimestamp * 1000);
+                                    lastDayChecked = `${date.getUTCDate()}.${date.getUTCMonth() + 1}.${date.getUTCFullYear()}`;
+                                    generateKey();
+                                }
                             }
                         }
                     }
@@ -597,10 +615,7 @@
             }
 
             init();
-
             if (tg) tg.ready();
-
-            console.log('🔑 UniversalRoblox Key Generator');
         })();
     </script>
 </body>
