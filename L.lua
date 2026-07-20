@@ -1,4 +1,6 @@
-
+-- =============================================================================
+-- GRAPE REMASTERED UI LIBRARY (UPDATED: FIXED HOTKEY MINIMIZE)
+-- =============================================================================
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
@@ -37,7 +39,7 @@ function Library:CreateWindow(titleText)
     if not success then ScreenGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui") end
 
     local MainFrame = Instance.new("Frame")
-    MainFrame.Size = UDim2.new(0, 0, 0, 0) -- Анимация открытия установит нужный размер
+    MainFrame.Size = UDim2.new(0, 0, 0, 0)
     MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
     MainFrame.BackgroundColor3 = Theme.Background
     MainFrame.BorderSizePixel = 0
@@ -126,17 +128,16 @@ function Library:CreateWindow(titleText)
 
     local Window = { Tabs = {}, CurrentTab = nil, IsMinimized = false, StoredSize = UDim2.new(0, 650, 0, 420), GuiInstance = ScreenGui }
 
-    local function ToggleMinimize()
+    -- Экспортируем функцию глобально в объект окна для доступа из лоадера
+    function Window:ToggleMinimize()
         Window.IsMinimized = not Window.IsMinimized
         if Window.IsMinimized then
-            -- Сворачивание: скрываем контент и плавно уменьшаем высоту до верхней панели
             ContentContainer.Visible = false
             TabContainer.Visible = false
             Tween(MainFrame, {Size = UDim2.new(0, 650, 0, 44)}, 0.25)
             Tween(CollapseBtn, {Position = UDim2.new(0.5, -15, 0, 26)}, 0.25)
             task.spawn(function() task.wait(0.1); if Window.IsMinimized then CollapseBtn.Text = "\\/" end end)
         else
-            -- Разворачивание: возвращаем исходный размер, затем включаем видимость
             local openTween = Tween(MainFrame, {Size = Window.StoredSize}, 0.25)
             Tween(CollapseBtn, {Position = UDim2.new(0.5, -15, 1, -15)}, 0.25)
             task.spawn(function() task.wait(0.1); if not Window.IsMinimized then CollapseBtn.Text = "/\\" end end)
@@ -149,7 +150,9 @@ function Library:CreateWindow(titleText)
         end
     end
 
-    CollapseBtn.MouseButton1Click:Connect(ToggleMinimize)
+    CollapseBtn.MouseButton1Click:Connect(function()
+        Window:ToggleMinimize()
+    end)
 
     function Window:CreateTab(tabName)
         local TabBtn = Instance.new("TextButton")
@@ -162,7 +165,6 @@ function Library:CreateWindow(titleText)
         TabBtn.AutoButtonColor = false
         TabBtn.Parent = TabContainer
 
-        -- Добавлено закругление углов для вкладок
         local TabCorner = Instance.new("UICorner")
         TabCorner.CornerRadius = UDim.new(0, 4)
         TabCorner.Parent = TabBtn
