@@ -1,6 +1,4 @@
--- =============================================================================
--- GRAPE REMASTERED UI LIBRARY (FOR GITHUB)
--- =============================================================================
+
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
@@ -27,7 +25,6 @@ local function Tween(instance, properties, duration)
 end
 
 local Library = {}
-local ToggleMinimizeGlobal = function() end
 
 function Library:CreateWindow(titleText)
     local ScreenGui = Instance.new("ScreenGui")
@@ -40,7 +37,7 @@ function Library:CreateWindow(titleText)
     if not success then ScreenGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui") end
 
     local MainFrame = Instance.new("Frame")
-    MainFrame.Size = UDim2.new(0, 0, 0, 0)
+    MainFrame.Size = UDim2.new(0, 0, 0, 0) -- Анимация открытия установит нужный размер
     MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
     MainFrame.BackgroundColor3 = Theme.Background
     MainFrame.BorderSizePixel = 0
@@ -49,7 +46,7 @@ function Library:CreateWindow(titleText)
     MainFrame.Parent = ScreenGui
 
     local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 5)
+    UICorner.CornerRadius = UDim.new(0, 6)
     UICorner.Parent = MainFrame
 
     local TopBar = Instance.new("Frame")
@@ -107,7 +104,7 @@ function Library:CreateWindow(titleText)
     CollapseBtn.Parent = MainFrame
 
     local DragArea = Instance.new("TextButton")
-    DragArea.Size = UDim2.new(1, 0, 0, 39)
+    DragArea.Size = UDim2.new(1, 0, 0, 35)
     DragArea.BackgroundTransparency = 1
     DragArea.Text = ""
     DragArea.Parent = MainFrame
@@ -132,20 +129,27 @@ function Library:CreateWindow(titleText)
     local function ToggleMinimize()
         Window.IsMinimized = not Window.IsMinimized
         if Window.IsMinimized then
-            ContentContainer.Visible = false; TabContainer.Visible = false
-            Tween(MainFrame, {Size = UDim2.new(0, MainFrame.Size.X.Offset, 0, 44)}, 0.2)
-            Tween(CollapseBtn, {Position = UDim2.new(0.5, -15, 0, 26)}, 0.3)
-            task.spawn(function() task.wait(0.15); if Window.IsMinimized then CollapseBtn.Text = "\\/" end end)
+            -- Сворачивание: скрываем контент и плавно уменьшаем высоту до верхней панели
+            ContentContainer.Visible = false
+            TabContainer.Visible = false
+            Tween(MainFrame, {Size = UDim2.new(0, 650, 0, 44)}, 0.25)
+            Tween(CollapseBtn, {Position = UDim2.new(0.5, -15, 0, 26)}, 0.25)
+            task.spawn(function() task.wait(0.1); if Window.IsMinimized then CollapseBtn.Text = "\\/" end end)
         else
-            Tween(MainFrame, {Size = Window.StoredSize}, 0.3)
-            local arrowTween = Tween(CollapseBtn, {Position = UDim2.new(0.5, -15, 1, -15)}, 0.01)
-            task.spawn(function() task.wait(0.15); if not Window.IsMinimized then CollapseBtn.Text = "/\\" end end)
-            arrowTween.Completed:Connect(function() if not Window.IsMinimized then ContentContainer.Visible = true; TabContainer.Visible = true end end)
+            -- Разворачивание: возвращаем исходный размер, затем включаем видимость
+            local openTween = Tween(MainFrame, {Size = Window.StoredSize}, 0.25)
+            Tween(CollapseBtn, {Position = UDim2.new(0.5, -15, 1, -15)}, 0.25)
+            task.spawn(function() task.wait(0.1); if not Window.IsMinimized then CollapseBtn.Text = "/\\" end end)
+            openTween.Completed:Connect(function()
+                if not Window.IsMinimized then 
+                    ContentContainer.Visible = true 
+                    TabContainer.Visible = true 
+                end
+            end)
         end
     end
 
     CollapseBtn.MouseButton1Click:Connect(ToggleMinimize)
-    ToggleMinimizeGlobal = ToggleMinimize
 
     function Window:CreateTab(tabName)
         local TabBtn = Instance.new("TextButton")
@@ -157,6 +161,11 @@ function Library:CreateWindow(titleText)
         TabBtn.TextSize = 14
         TabBtn.AutoButtonColor = false
         TabBtn.Parent = TabContainer
+
+        -- Добавлено закругление углов для вкладок
+        local TabCorner = Instance.new("UICorner")
+        TabCorner.CornerRadius = UDim.new(0, 4)
+        TabCorner.Parent = TabBtn
 
         local ContentScroll = Instance.new("ScrollingFrame")
         ContentScroll.Size = UDim2.new(1, 0, 1, 0)
@@ -174,17 +183,17 @@ function Library:CreateWindow(titleText)
             ContentScroll.CanvasSize = UDim2.new(0, 0, 0, ContentList.AbsoluteContentSize.Y + 10)
         end)
 
-        TabBtn.MouseEnter:Connect(function() if Window.CurrentTab ~= ContentScroll then Tween(TabBtn, {BackgroundColor3 = Theme.ElementHover, TextColor3 = Theme.Text}, 0.2) end end)
-        TabBtn.MouseLeave:Connect(function() if Window.CurrentTab ~= ContentScroll then Tween(TabBtn, {BackgroundColor3 = Theme.TabInactive, TextColor3 = Theme.TextDark}, 0.2) end end)
+        TabBtn.MouseEnter:Connect(function() if Window.CurrentTab ~= ContentScroll then Tween(TabBtn, {BackgroundColor3 = Theme.ElementHover, TextColor3 = Theme.Text}, 0.15) end end)
+        TabBtn.MouseLeave:Connect(function() if Window.CurrentTab ~= ContentScroll then Tween(TabBtn, {BackgroundColor3 = Theme.TabInactive, TextColor3 = Theme.TextDark}, 0.15) end end)
 
         TabBtn.MouseButton1Click:Connect(function()
             for _, tab in pairs(Window.Tabs) do
                 tab.Content.Visible = false
-                Tween(tab.Button, {BackgroundColor3 = Theme.TabInactive, TextColor3 = Theme.TextDark}, 0.2)
+                Tween(tab.Button, {BackgroundColor3 = Theme.TabInactive, TextColor3 = Theme.TextDark}, 0.15)
             end
             Window.CurrentTab = ContentScroll
             ContentScroll.Visible = true
-            Tween(TabBtn, {BackgroundColor3 = Theme.TabActive, TextColor3 = Theme.Text}, 0.2)
+            Tween(TabBtn, {BackgroundColor3 = Theme.TabActive, TextColor3 = Theme.Text}, 0.15)
         end)
 
         table.insert(Window.Tabs, {Button = TabBtn, Content = ContentScroll})
@@ -229,10 +238,10 @@ function Library:CreateWindow(titleText)
             AccordionBtn.MouseButton1Click:Connect(function()
                 isOpen = not isOpen
                 AccordionBtn.Text = (isOpen and "  ▽  " or "  ▷  ") .. title
-                Tween(AccordionFrame, {Size = UDim2.new(1, 0, 0, isOpen and (ItemList.AbsoluteContentSize.Y + 48) or 32)}, 0.25)
+                Tween(AccordionFrame, {Size = UDim2.new(1, 0, 0, isOpen and (ItemList.AbsoluteContentSize.Y + 48) or 32)}, 0.2)
             end)
             ItemList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-                if isOpen then Tween(AccordionFrame, {Size = UDim2.new(1, 0, 0, ItemList.AbsoluteContentSize.Y + 48)}, 0.15) end
+                if isOpen then Tween(AccordionFrame, {Size = UDim2.new(1, 0, 0, ItemList.AbsoluteContentSize.Y + 48)}, 0.1) end
             end)
 
             local AccordionElements = {}
@@ -269,8 +278,8 @@ function Library:CreateWindow(titleText)
                 ToggleFrame.MouseLeave:Connect(function() if not state then Tween(Label, {TextColor3 = Theme.TextDark}, 0.15) end end)
                 ToggleFrame.MouseButton1Click:Connect(function()
                     state = not state
-                    Tween(Checkbox, {BackgroundColor3 = state and Theme.Accent or Theme.ElementBg}, 0.2)
-                    Tween(Label, {TextColor3 = state and Theme.Text or Theme.TextDark}, 0.2)
+                    Tween(Checkbox, {BackgroundColor3 = state and Theme.Accent or Theme.ElementBg}, 0.15)
+                    Tween(Label, {TextColor3 = state and Theme.Text or Theme.TextDark}, 0.15)
                     callback(state)
                 end)
             end
@@ -352,7 +361,7 @@ function Library:CreateWindow(titleText)
                 
                 Checkbox.MouseButton1Click:Connect(function()
                     cbState = not cbState
-                    Tween(Checkbox, {BackgroundColor3 = cbState and Theme.Accent or Theme.ElementBg}, 0.2)
+                    Tween(Checkbox, {BackgroundColor3 = cbState and Theme.Accent or Theme.ElementBg}, 0.15)
                     onCheckboxChange(cbState)
                 end)
 
@@ -522,8 +531,8 @@ function Library:CreateWindow(titleText)
         return TabElements
     end
 
-    local openTweenInfo = TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-    TweenService:Create(MainFrame, openTweenInfo, { Size = UDim2.new(0, 650, 0, 420), Position = UDim2.new(0.5, -325, 0.5, -210) }):Play()
+    local openTweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+    TweenService:Create(MainFrame, openTweenInfo, { Size = Window.StoredSize, Position = UDim2.new(0.5, -325, 0.5, -210) }):Play()
 
     return Window
 end
